@@ -4,14 +4,9 @@ numpy
 Pillow
 python-dotenv
 
-# Face recognition - using deepface instead of face-recognition (no dlib required)
-deepface
-tensorflow
-opencv-python-headless
+# Face recognition - using Hugging Face API (no TensorFlow/Keras needed)
+huggingface-hub
 
 # Optional: Flask version (for local development)
 flask
 werkzeug
-
-# Hugging Face (optional, for API usage)
-huggingface-hub

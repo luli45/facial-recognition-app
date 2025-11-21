@@ -4,17 +4,22 @@ from PIL import Image
 import io
 from database import init_db, add_missing_person, get_all_missing_persons, get_missing_person_by_id
 
-# Use cloud-compatible service (works on Streamlit Cloud)
+# Use simple Hugging Face-based service (works on Streamlit Cloud without TensorFlow)
 try:
-    from face_recognition_service_cloud import FaceRecognitionService
+    from face_recognition_service_simple import FaceRecognitionService
 except ImportError:
-    st.error("""
-    ⚠️ Face recognition service not available. 
-    
-    For Streamlit Cloud deployment, make sure you're using the cloud-compatible requirements.
-    The app requires 'deepface' which should be in requirements.txt.
-    """)
-    st.stop()
+    # Fallback to cloud service if simple version not available
+    try:
+        from face_recognition_service_cloud import FaceRecognitionService
+    except ImportError:
+        st.error("""
+        ⚠️ Face recognition service not available. 
+        
+        Please ensure:
+        1. HUGGINGFACE_API_KEY is set in Streamlit Cloud secrets
+        2. All dependencies are installed
+        """)
+        st.stop()
 
 # Page configuration
 st.set_page_config(

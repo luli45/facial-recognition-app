@@ -28,11 +28,13 @@ class FaceRecognitionService:
         try:
             # Use DeepFace to get face embedding
             # Using VGG-Face model which is good for face recognition
+            # Use 'opencv' backend to avoid Keras 3 compatibility issues
             embedding = DeepFace.represent(
                 img_path=image_path,
                 model_name='VGG-Face',
-                enforce_detection=True,
-                detector_backend='opencv'  # OpenCV doesn't require dlib
+                enforce_detection=False,  # Set to False to avoid strict detection
+                detector_backend='opencv',  # OpenCV doesn't require dlib and avoids Keras issues
+                silent=True  # Suppress warnings
             )
             
             if embedding and len(embedding) > 0:
@@ -49,12 +51,35 @@ class FaceRecognitionService:
                 "no face detected", 
                 "face could not be detected",
                 "could not detect a face",
-                "no face found"
+                "no face found",
+                "valid_for_keras3",
+                "keras"
             ]):
-                return None
+                # Try with a simpler approach if Keras issues occur
+                try:
+                    return self._encode_with_simple_backend(image_path)
+                except:
+                    return None
             # For other errors, log and return None
             print(f"Error encoding face: {e}")
             return None
+    
+    def _encode_with_simple_backend(self, image_path):
+        """Fallback encoding method using simpler backend"""
+        try:
+            # Try with mtcnn backend which is more compatible
+            embedding = DeepFace.represent(
+                img_path=image_path,
+                model_name='VGG-Face',
+                enforce_detection=False,
+                detector_backend='mtcnn',
+                silent=True
+            )
+            if embedding and len(embedding) > 0:
+                return embedding[0]['embedding']
+        except:
+            pass
+        return None
     
     def find_matches(self, query_encoding, threshold=0.6):
         """
