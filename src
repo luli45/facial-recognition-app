@@ -1,0 +1,13 @@
+import os
+from dotenv import load_dotenv
+from huggingface_hub import InferenceClient
+
+# Load environment variables from .env file
+load_dotenv()
+
+client = InferenceClient(
+    provider="auto",
+    api_key=os.environ.get("HUGGINGFACE_API_KEY"),
+)
+
+output = client.image_classification("cats.jpg", model="google/vit-base-patch16-224")

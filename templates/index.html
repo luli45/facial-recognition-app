@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missing Persons Facial Recognition System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .tab-button {
+            padding: 12px 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #667eea;
+            border-color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: block;
+            padding: 20px;
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            text-align: center;
+            background: #f8f9ff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload-label:hover {
+            background: #f0f2ff;
+            border-color: #764ba2;
+        }
+
+        .file-upload-label.has-file {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .preview-image.show {
+            display: block;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            margin-top: 30px;
+        }
+
+        .match-card {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .match-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .match-card strong {
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .confidence-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #4caf50;
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .confidence-badge.medium {
+            background: #ff9800;
+        }
+
+        .confidence-badge.low {
+            background: #f44336;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+
+        .alert.error {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #f44336;
+        }
+
+        .persons-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .person-card {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .person-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .person-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .person-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .person-card p {
+            color: #666;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Missing Persons Recognition System</h1>
+            <p>Public Safety Facial Recognition for Identifying Missing Persons</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('search')">Search</button>
+            <button class="tab-button" onclick="switchTab('add')">Add Missing Person</button>
+            <button class="tab-button" onclick="switchTab('list')">View All</button>
+        </div>
+
+        <!-- Search Tab -->
+        <div id="search-tab" class="tab-content active">
+            <h2>Search for a Person</h2>
+            <p style="color: #666; margin-bottom: 20px;">Upload a photo to search against the missing persons database</p>
+            
+            <div class="alert" id="search-alert"></div>
+            
+            <form id="search-form">
+                <div class="form-group">
+                    <div class="file-upload">
+                        <input type="file" id="search-photo" name="photo" accept="image/*" required>
+                        <label for="search-photo" class="file-upload-label" id="search-upload-label">
+                            📷 Click to upload or drag and drop a photo
+                        </label>
+                    </div>
+                    <img id="search-preview" class="preview-image" alt="Preview">
+                </div>
+                
+                <button type="submit" class="btn" id="search-btn">Search Database</button>
+            </form>
+
+            <div class="loading" id="search-loading">
+                <div class="spinner"></div>
+                <p>Analyzing face and searching database...</p>
+            </div>
+
+            <div class="results" id="search-results"></div>
+        </div>
+
+        <!-- Add Person Tab -->
+        <div id="add-tab" class="tab-content">
+            <h2>Add Missing Person</h2>
+            <p style="color: #666; margin-bottom: 20px;">Add a new missing person to the database</p>
+            
+            <div class="alert" id="add-alert"></div>
+            
+            <form id="add-form">
+                <div class="form-group">
+                    <label for="name">Name *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="text" id="age" name="age" placeholder="e.g., 15, 25-30">
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Physical description, clothing, last seen location, etc."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="date-missing">Date Missing</label>
+                    <input type="date" id="date-missing" name="date_missing">
+                </div>
+                
+                <div class="form-group">
+                    <label for="contact">Contact Information</label>
+                    <input type="text" id="contact" name="contact" placeholder="Phone number or email for reporting">
+                </div>
+                
+                <div class="form-group">
+                    <div class="file-upload">
+                        <input type="file" id="add-photo" name="photo" accept="image/*" required>
+                        <label for="add-photo" class="file-upload-label" id="add-upload-label">
+                            📷 Click to upload a clear photo of the person's face
+                        </label>
+                    </div>
+                    <img id="add-preview" class="preview-image" alt="Preview">
+                </div>
+                
+                <button type="submit" class="btn" id="add-btn">Add to Database</button>
+            </form>
+
+            <div class="loading" id="add-loading">
+                <div class="spinner"></div>
+                <p>Processing image and adding to database...</p>
+            </div>
+        </div>
+
+        <!-- List Tab -->
+        <div id="list-tab" class="tab-content">
+            <h2>All Missing Persons</h2>
+            <p style="color: #666; margin-bottom: 20px;">View all persons in the database</p>
+            
+            <div class="loading" id="list-loading">
+                <div class="spinner"></div>
+                <p>Loading...</p>
+            </div>
+            
+            <div class="persons-list" id="persons-list"></div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tab) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tab + '-tab').classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load persons list if switching to list tab
+            if (tab === 'list') {
+                loadPersonsList();
+            }
+        }
+
+        // File preview for search
+        document.getElementById('search-photo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('search-preview').src = e.target.result;
+                    document.getElementById('search-preview').classList.add('show');
+                    document.getElementById('search-upload-label').classList.add('has-file');
+                    document.getElementById('search-upload-label').textContent = '✓ ' + file.name;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // File preview for add
+        document.getElementById('add-photo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('add-preview').src = e.target.result;
+                    document.getElementById('add-preview').classList.add('show');
+                    document.getElementById('add-upload-label').classList.add('has-file');
+                    document.getElementById('add-upload-label').textContent = '✓ ' + file.name;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Search form submission
+        document.getElementById('search-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const fileInput = document.getElementById('search-photo');
+            
+            if (!fileInput.files[0]) {
+                showAlert('search-alert', 'Please select a photo', 'error');
+                return;
+            }
+            
+            formData.append('photo', fileInput.files[0]);
+            
+            document.getElementById('search-btn').disabled = true;
+            document.getElementById('search-loading').classList.add('show');
+            document.getElementById('search-results').innerHTML = '';
+            hideAlert('search-alert');
+            
+            try {
+                const response = await fetch('/api/search', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    if (data.matches.length === 0) {
+                        document.getElementById('search-results').innerHTML = 
+                            '<div class="alert success show"><strong>No matches found.</strong> The person in the photo does not match anyone in the database.</div>';
+                    } else {
+                        let html = `<h3 style="margin-bottom: 20px;">Found ${data.match_count} match(es):</h3>`;
+                        data.matches.forEach(match => {
+                            const confidenceClass = match.confidence >= 80 ? '' : 
+                                                   match.confidence >= 60 ? 'medium' : 'low';
+                            html += `
+                                <div class="match-card">
+                                    <strong>${match.name}</strong>
+                                    <span class="confidence-badge ${confidenceClass}">${match.confidence}% match</span>
+                                    ${match.age ? `<p><strong>Age:</strong> ${match.age}</p>` : ''}
+                                    ${match.description ? `<p><strong>Description:</strong> ${match.description}</p>` : ''}
+                                    ${match.date_missing ? `<p><strong>Missing since:</strong> ${match.date_missing}</p>` : ''}
+                                    ${match.contact ? `<p><strong>Contact:</strong> ${match.contact}</p>` : ''}
+                                </div>
+                            `;
+                        });
+                        document.getElementById('search-results').innerHTML = html;
+                    }
+                } else {
+                    showAlert('search-alert', data.error || 'An error occurred', 'error');
+                }
+            } catch (error) {
+                showAlert('search-alert', 'Network error: ' + error.message, 'error');
+            } finally {
+                document.getElementById('search-btn').disabled = false;
+                document.getElementById('search-loading').classList.remove('show');
+            }
+        });
+
+        // Add form submission
+        document.getElementById('add-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const fileInput = document.getElementById('add-photo');
+            
+            if (!fileInput.files[0]) {
+                showAlert('add-alert', 'Please select a photo', 'error');
+                return;
+            }
+            
+            formData.append('photo', fileInput.files[0]);
+            formData.append('name', document.getElementById('name').value);
+            formData.append('age', document.getElementById('age').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('date_missing', document.getElementById('date-missing').value);
+            formData.append('contact', document.getElementById('contact').value);
+            
+            document.getElementById('add-btn').disabled = true;
+            document.getElementById('add-loading').classList.add('show');
+            hideAlert('add-alert');
+            
+            try {
+                const response = await fetch('/api/missing-persons', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert('add-alert', 'Missing person added successfully!', 'success');
+                    document.getElementById('add-form').reset();
+                    document.getElementById('add-preview').classList.remove('show');
+                    document.getElementById('add-upload-label').classList.remove('has-file');
+                    document.getElementById('add-upload-label').textContent = '📷 Click to upload a clear photo of the person\'s face';
+                } else {
+                    showAlert('add-alert', data.error || 'An error occurred', 'error');
+                }
+            } catch (error) {
+                showAlert('add-alert', 'Network error: ' + error.message, 'error');
+            } finally {
+                document.getElementById('add-btn').disabled = false;
+                document.getElementById('add-loading').classList.remove('show');
+            }
+        });
+
+        // Load persons list
+        async function loadPersonsList() {
+            document.getElementById('list-loading').classList.add('show');
+            document.getElementById('persons-list').innerHTML = '';
+            
+            try {
+                const response = await fetch('/api/missing-persons');
+                const persons = await response.json();
+                
+                if (persons.length === 0) {
+                    document.getElementById('persons-list').innerHTML = 
+                        '<p style="text-align: center; color: #666; padding: 40px;">No missing persons in database yet.</p>';
+                } else {
+                    let html = '';
+                    persons.forEach(person => {
+                        html += `
+                            <div class="person-card">
+                                <h3>${person.name}</h3>
+                                ${person.age ? `<p><strong>Age:</strong> ${person.age}</p>` : ''}
+                                ${person.description ? `<p><strong>Description:</strong> ${person.description}</p>` : ''}
+                                ${person.date_missing ? `<p><strong>Missing since:</strong> ${person.date_missing}</p>` : ''}
+                                ${person.contact ? `<p><strong>Contact:</strong> ${person.contact}</p>` : ''}
+                            </div>
+                        `;
+                    });
+                    document.getElementById('persons-list').innerHTML = html;
+                }
+            } catch (error) {
+                document.getElementById('persons-list').innerHTML = 
+                    '<p style="text-align: center; color: #f44336; padding: 40px;">Error loading persons: ' + error.message + '</p>';
+            } finally {
+                document.getElementById('list-loading').classList.remove('show');
+            }
+        }
+
+        // Alert functions
+        function showAlert(id, message, type) {
+            const alert = document.getElementById(id);
+            alert.textContent = message;
+            alert.className = `alert ${type} show`;
+        }
+
+        function hideAlert(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+    </script>
+</body>
+</html>
+

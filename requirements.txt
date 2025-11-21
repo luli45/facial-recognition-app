@@ -1,0 +1,5 @@
+flask
+face-recognition
+numpy
+python-dotenv
+werkzeug
