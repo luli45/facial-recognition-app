@@ -1,7 +1,17 @@
-flask
-face-recognition
-numpy
-python-dotenv
-werkzeug
+# Core dependencies
 streamlit
+numpy
 Pillow
+python-dotenv
+
+# Face recognition - using deepface instead of face-recognition (no dlib required)
+deepface
+tensorflow
+opencv-python-headless
+
+# Optional: Flask version (for local development)
+flask
+werkzeug
+
+# Hugging Face (optional, for API usage)
+huggingface-hub

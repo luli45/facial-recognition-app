@@ -3,7 +3,18 @@ import os
 from PIL import Image
 import io
 from database import init_db, add_missing_person, get_all_missing_persons, get_missing_person_by_id
-from face_recognition_service import FaceRecognitionService
+
+# Use cloud-compatible service (works on Streamlit Cloud)
+try:
+    from face_recognition_service_cloud import FaceRecognitionService
+except ImportError:
+    st.error("""
+    ⚠️ Face recognition service not available. 
+    
+    For Streamlit Cloud deployment, make sure you're using the cloud-compatible requirements.
+    The app requires 'deepface' which should be in requirements.txt.
+    """)
+    st.stop()
 
 # Page configuration
 st.set_page_config(

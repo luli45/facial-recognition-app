@@ -1,0 +1,14 @@
+# Cloud-compatible requirements for Streamlit Cloud deployment
+# This version doesn't require dlib/cmake
+
+streamlit
+numpy
+Pillow
+python-dotenv
+deepface
+tensorflow
+opencv-python-headless
+
+# Optional: for Hugging Face API (if you want to use it)
+huggingface-hub
+

@@ -93,8 +93,9 @@ font = "sans serif"
 
 ### Dependencies
 - Streamlit Cloud will automatically install packages from `requirements.txt`
-- The `face-recognition` library requires `dlib`, which should install automatically
-- If you encounter issues, you may need to add `dlib` explicitly to requirements.txt
+- **Important:** This app uses `deepface` instead of `face-recognition` to avoid `dlib`/`cmake` build issues on Streamlit Cloud
+- The `deepface` library works without requiring system-level dependencies like `cmake`
+- All dependencies are listed in `requirements.txt`
 
 ## Step 5: Update Your App
 
