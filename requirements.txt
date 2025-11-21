@@ -3,3 +3,5 @@ face-recognition
 numpy
 python-dotenv
 werkzeug
+streamlit
+Pillow

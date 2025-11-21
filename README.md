@@ -2,6 +2,11 @@
 
 A web-based facial recognition application designed for public safety purposes to help identify missing persons, particularly children.
 
+## Available Versions
+
+- **Flask Version** (`app.py`) - Traditional web app with custom HTML/CSS
+- **Streamlit Version** (`streamlit_app.py`) - Interactive dashboard, ready for Streamlit Cloud deployment ⭐
+
 ## Features
 
 - **Face Recognition**: Advanced facial recognition using deep learning models
@@ -40,7 +45,19 @@ A web-based facial recognition application designed for public safety purposes t
 
 ## Usage
 
-1. **Start the application:**
+### Option 1: Streamlit (Recommended for Deployment)
+
+1. **Start the Streamlit app:**
+   ```bash
+   streamlit run streamlit_app.py
+   ```
+
+2. **Open your browser:**
+   The app will automatically open at `http://localhost:8501`
+
+### Option 2: Flask
+
+1. **Start the Flask application:**
    ```bash
    python app.py
    ```
@@ -117,6 +134,17 @@ facialrecognition_app/
 
 ## Deployment
 
+### Streamlit Cloud (Recommended)
+For deploying the Streamlit version to Streamlit Cloud, see [STREAMLIT_DEPLOYMENT.md](STREAMLIT_DEPLOYMENT.md).
+
+**Quick start:**
+1. Push your code to GitHub
+2. Go to https://share.streamlit.io/
+3. Connect your repository
+4. Set main file to: `streamlit_app.py`
+5. Deploy!
+
+### GitHub
 For detailed instructions on deploying to GitHub while protecting sensitive information, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 **Quick checklist before pushing to GitHub:**
